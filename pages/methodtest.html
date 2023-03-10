@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html xml:lang="en" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>HTTP with JS</title>
+    <link href="../css/styles.css" rel="stylesheet">
+    <link href="../images/favicon.ico" rel="icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.1/purify.js"></script>
+</head>
+
+
+<body class="method-form">
+
+    
+    <header>
+        <div>
+            <h1>HTTP Forms</h1>
+            <nav>
+                <ul>
+                    <li><a href="../home.html">Homepage</a></li>
+                    <li><a href="../pages/education.html">Education</a></li>
+                    <li><a href="../pages/experience.html">Experience</a></li>
+                    <li><a href="../pages/aboutme.html">About</a></li>
+                    <li><a href="../pages/contact.html">Contact</a></li>
+                    <li><a href="../pages/methodtest.html">Part 1</a></li>
+                    <li><a href="../pages/webcomponent.html">Part 2</a></li>
+                </ul>
+
+            </nav>
+        </div>
+    </header>
+   
+
+    <main class="methodtest">
+
+        <form class="httpform">
+            <h3>HTTP With JavaScript</h3>
+            <input name="id" type="text" class="fb" placeholder="ID">
+            <input name="article_name" type="text" class="fb" placeholder="Article Name">
+            <textarea name="article_body" class="fb" placeholder="Article Body"></textarea>
+
+            <input id="date" name="date" type="hidden" class="fb">
+
+            <button value="https://httpbin.org/post" class="fb">POST</button>
+            <button value="https://httpbin.org/get" class="fb">GET</button>
+            <button value="https://httpbin.org/put" class="fb">PUT</button>
+            <button value="https://httpbin.org/delete" class="fb">DELETE</button>
+        </form>
+
+
+
+        <output id="response"></output>
+    </main>
+
+    <script type="module">
+
+        import {tableCreate, currentDate} from '../js/methodtest.js'
+
+
+        const form = document.querySelector("form");
+        const buttons = document.querySelectorAll("button");
+        const output = document.querySelector("output");
+        buttons.forEach(button => {
+            button.addEventListener("click", (event) => {
+                event.preventDefault();
+                currentDate();
+                const action = button.getAttribute("value");
+                const method = button.textContent;
+
+                const id =  DOMPurify.sanitize(form.id.value);
+                const article_name =  DOMPurify.sanitize(form.article_name.value);
+                const article_body =  DOMPurify.sanitize(form.article_body.value);
+                const date = form.date.value;
+
+                const body = JSON.stringify({
+                    id,
+                    article_name,
+                    article_body,
+                    date
+                });
+                const headers = {
+                    "Content-Type": "application/json"
+                };
+                const options = {
+                    method,
+                    headers,
+                    body
+                };
+
+                if (method == "GET") {
+
+                    delete options.body;
+                }
+
+                fetch(action, options)
+                    .then(response => response.json())
+                    .then(json => {
+                        tableCreate(json);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            });
+        });
+
+
+    </script>
+   
+
+</body>
+
+</html>
